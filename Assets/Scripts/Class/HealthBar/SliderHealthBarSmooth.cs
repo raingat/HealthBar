@@ -1,33 +1,13 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class SliderHealthBarSmooth : MonoBehaviour
+public class SliderHealthBarSmooth : SliderHealthBar
 {
-    [SerializeField] private Health _health;
-
-    [SerializeField] private float _stepHealth;
-
-    private Slider _slider;
-
     private Coroutine _coroutine;
 
-    private void Awake()
-    {
-        _slider = GetComponent<Slider>();
-    }
+    private float _stepIncreaseCoefficient = 1.0f;
 
-    private void OnEnable()
-    {
-        _health.HealthChanged += ChangeValue;
-    }
-
-    private void OnDisable()
-    {
-        _health.HealthChanged -= ChangeValue;
-    }
-
-    private void ChangeValue(float currentHealth)
+    protected override void ChangeValue(float currentHealth)
     {
         float fractionMaximumHealth = currentHealth / _health.MaxHealth;
 
@@ -38,14 +18,20 @@ public class SliderHealthBarSmooth : MonoBehaviour
             _coroutine = null;
         }
 
-        _coroutine = StartCoroutine(ChangeState(fractionMaximumHealth));
+        float startPosition = _slider.value;
+
+        _coroutine = StartCoroutine(ChangeState(fractionMaximumHealth, startPosition));
     }
 
-    private IEnumerator ChangeState(float fractionMaximumHealth)
+    private IEnumerator ChangeState(float fractionMaximumHealth, float startPosition)
     {
+        float step = 0.0f;
+
         while (_slider.value != fractionMaximumHealth)
         {
-            _slider.value = Mathf.MoveTowards(_slider.value, fractionMaximumHealth, _stepHealth * Time.deltaTime);
+            step = Mathf.Clamp01(step += _stepIncreaseCoefficient * Time.deltaTime);
+
+            _slider.value = Mathf.Lerp(startPosition, fractionMaximumHealth, step);
 
             yield return null;
         }

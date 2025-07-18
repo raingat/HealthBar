@@ -11,6 +11,7 @@ public class Health : MonoBehaviour, IDamagable
     public event Action<GameObject> Died;
     public event Action<float> HealthChanged;
 
+    public bool IsDied => _currentHealth <= _minHealth;
     public float MaxHealth => _maxHealth;
 
     private void Awake()
@@ -20,12 +21,12 @@ public class Health : MonoBehaviour, IDamagable
 
     public void TakeDamage(float damage)
     {
-        _currentHealth -= damage;
+        if (damage < 0)
+            damage = 0;
 
-        if (_currentHealth <= _minHealth)
-            _currentHealth = _minHealth;
+        _currentHealth = Mathf.Clamp(_currentHealth -= damage, _minHealth, _maxHealth);
 
-        if (IsDied())
+        if (IsDied)
             Died?.Invoke(gameObject);
 
         HealthChanged?.Invoke(_currentHealth);
@@ -33,16 +34,11 @@ public class Health : MonoBehaviour, IDamagable
 
     public void Treat(float countHeal)
     {
-        _currentHealth += countHeal;
+        if (countHeal < 0)
+            countHeal = 0;
 
-        if (_currentHealth > _maxHealth)
-            _currentHealth = _maxHealth;
+        _currentHealth = Mathf.Clamp(_currentHealth += countHeal, _minHealth, _maxHealth);
 
         HealthChanged?.Invoke(_currentHealth);
-    }
-
-    private bool IsDied()
-    {
-        return _currentHealth <= _minHealth;
     }
 }
