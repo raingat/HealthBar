@@ -11,6 +11,6 @@ public class SliderHealthBar : HealthBar
 
     protected override void ChangeValue(float currentHealth)
     {
-        _slider.value = currentHealth / _health.MaxHealth;
+        _slider.value = currentHealth / Health.MaxHealth;
     }
 }

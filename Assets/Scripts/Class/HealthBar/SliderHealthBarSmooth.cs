@@ -9,7 +9,7 @@ public class SliderHealthBarSmooth : SliderHealthBar
 
     protected override void ChangeValue(float currentHealth)
     {
-        float fractionMaximumHealth = currentHealth / _health.MaxHealth;
+        float fractionMaximumHealth = currentHealth / Health.MaxHealth;
 
         if (_coroutine != null)
         {
@@ -27,7 +27,7 @@ public class SliderHealthBarSmooth : SliderHealthBar
     {
         float step = 0.0f;
 
-        while (_slider.value != fractionMaximumHealth)
+        while (Mathf.Approximately(_slider.value, fractionMaximumHealth) == false)
         {
             step = Mathf.Clamp01(step += _stepIncreaseCoefficient * Time.deltaTime);
 

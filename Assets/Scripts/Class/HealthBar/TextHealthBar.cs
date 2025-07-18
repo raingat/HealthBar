@@ -9,7 +9,7 @@ public class TextHealthBar : HealthBar
 
     private void Awake()
     {
-        _maxHealth = _health.MaxHealth.ToString();
+        _maxHealth = Health.MaxHealth.ToString();
 
         _text.text = $"{_maxHealth}/{_maxHealth}";
     }
